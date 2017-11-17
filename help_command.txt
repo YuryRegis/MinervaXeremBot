@@ -1,0 +1,47 @@
+       **Manual de comandos do bot**
+
+/help ou /ajuda - Exibe manual de comandos
+/ofertar - Insere sua oferta de carona no banco de dados
+/buscar - Busca no banco de dados caronas disponiveis
+/alterar - Altera algum dado no banco de dados
+/carona - Incluir seu nome em uma carona ofertada
+/cancela - Cancela carona
+/excluir - Exclui oferta de carona
+
+       **Sintaxe de comandos**
+
+/ofertar ORIGEM DESTINO HORA NºVAGAS VALOR1 VALOR2
+/ofertar DATA ORIGEM DESTINO HORA NºVAGAS VALOR1 VALOR2
+*DATA --> Use DATA para agendar uma oferta
+/excluir HORA
+/excluir DATA HORA
+*DATA --> Use DATA para excluir uma viagem agendada
+/carona NOME_MOTORISTA HORA
+/carona DATA NOME_MOTORIStA HORA
+*DATA --> Use DATA para inclusão em oferta agendada
+/cancela MOTORISTA HORA
+/cancela MOTORISTA DATA HORA
+*DATA --> Use DATA para cancelar carona agendada
+/buscar ORIGEM DESTINO
+/buscar PALAVRA
+*PALAVRA --> data, origem, destino, hora, nome_motorista
+/alterar ORIGEM DESTINO OPCAO ALTERACAO
+/alterar ORIGEM DESTINO DATA OPCAO ALTERACAO
+*DATA --> Use DATA para alterar oferta agendada
+*OPCAO --> data, hora, vagas, origem, destino,
+           valor1 ou valor2
+
+       **Exemplos de comandos**
+
+/ofertar fundao xerem 15:00 3 7.00 7.00
+/ofertar 14/11 xerem fundao 8:00 4 7.00 5.00
+/excluir 19:00
+/excluir 29/11 7:00
+/carona Harry 8:00
+/carona 09/11 Harry 15:00
+/cancela Adalberto 12:00
+/cancela Rosalinda 15/11 9:00
+/buscar fundao xerem
+/buscar 09/11
+/alterar xerem fundao hora 10:00
+/alterar fundao xerem 16/11 vagas 3

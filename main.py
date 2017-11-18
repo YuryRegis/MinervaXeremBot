@@ -3,7 +3,7 @@ import DataBase
 import datetime
 
 
-bot = telebot.TeleBot('501268361:AAETOUTYahtlvhGR0MzTw0AeE74OZ1Hdac8')
+bot = telebot.TeleBot('501268361:AAG3irEa-JvAwAIDBq9-ycjtBowX4Gu7LbM')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 
 

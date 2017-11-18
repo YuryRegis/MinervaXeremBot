@@ -11,16 +11,11 @@ name = "pypi"
 
 [packages]
 
-pytelegrambotapi = "==3.4.2"
+pytelegrambotapi = "==2.3.2"
 py = "==1.4.29"
 pytest = "==2.7.2"
 requests = "==2.7.0"
 django = "==1.9.8"
 telebot = "==0.0.3"
 logger = "==1.4"
-"urllib3" = "==1.22"
-
-
-[requires]
-
-python_version = "3.6"
+"urllib3" = "*"

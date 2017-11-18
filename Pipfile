@@ -11,7 +11,14 @@ name = "pypi"
 
 [packages]
 
-requests = "*"
+pytelegrambotapi = "==3.4.2"
+py = "==1.4.29"
+pytest = "==2.7.2"
+requests = "==2.7.0"
+django = "==1.9.8"
+telebot = "*"
+logger = "==1.4"
+"urllib3" = "==1.22"
 
 
 [requires]

@@ -145,7 +145,7 @@ def new_message(message):
             bot.send_message(message.chat.id, ans)
     except:
         bot.send_message(message.chat.id, msg_error)
-
+        
 
 @bot.message_handler(commands='limpar', content_types='text')
 def new_message(message):
@@ -157,4 +157,11 @@ def new_message(message):
 print("executando...")
 DataBase.create_table()
 
-bot.polling(none_stop=False, timeout=20, interval=0)
+try:
+    bot.polling(none_stop=False, timeout=20, interval=0)
+except KeyboardInterrupt:
+    break
+except TypeError:
+    bot.send_message(message.chat.id, msg_error)
+except:
+    pass

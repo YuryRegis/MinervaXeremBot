@@ -1,14 +1,10 @@
 import sqlite3
-import time
-import datetime
 
 
 def connection_on():
     connection = sqlite3.connect('banco.db', check_same_thread=False)
     cursor = connection.cursor()
     return connection, cursor
-#data = datetime.datetime.fromtimestamp(int(time.time())).strftime('%d/%m %H:%M')
-#print(str(data))
 
 
 def create_table():
@@ -181,7 +177,3 @@ def check_value(value, date):
             pass
     connection.close()
     return False
-
-
-ans = clean_table('17/11')
-print(ans)

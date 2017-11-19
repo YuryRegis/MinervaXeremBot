@@ -155,19 +155,19 @@ def new_message(message):
     bot.send_message(message.chat.id, ans)
 
 
-print("executando...")
-DataBase.create_table()
-
-
-while True:
+def telegram_polling():
     try:
-        time.sleep(20)
-        bot.polling(none_stop=False, timeout=20, interval=0)
-    except SyntaxError:
-        print('SyntaxError')
-        break
-    except KeyboardInterrupt:
-        print('KeyboardInterrupt')
-        break
+        bot.polling(none_stop=True, timeout=60) #constantly get messages from Telegram
     except:
-        pass
+        traceback_error_string=traceback.format_exc()
+        with open("Error.Log", "a") as myfile:
+            myfile.write("\r\n\r\n" + time.strftime("%c")+"\r\n<<ERROR polling>>\r\n"+ traceback_error_string + "\r\n<<ERROR polling>>")
+        bot.stop_polling()
+        time.sleep(10)
+        telegram_polling()
+
+
+if __name__ == '__main__':
+    print("executando...")
+    DataBase.create_table()
+    telegram_polling()

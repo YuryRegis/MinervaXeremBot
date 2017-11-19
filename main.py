@@ -1,6 +1,7 @@
 import telebot
 import DataBase
 import datetime
+import time
 
 
 bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
@@ -160,6 +161,7 @@ DataBase.create_table()
 
 while True:
     try:
+        time.sleep(20)
         bot.polling(none_stop=False, timeout=20, interval=0)
     except SyntaxError:
         print('SyntaxError')

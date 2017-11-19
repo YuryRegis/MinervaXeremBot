@@ -158,4 +158,14 @@ print("executando...")
 DataBase.create_table()
 
 
-bot.polling(none_stop=False, timeout=20, interval=0)
+while True:
+    try:
+        bot.polling(none_stop=False, timeout=20, interval=0)
+    except SyntaxError:
+        print('SyntaxError')
+        break
+    except KeyboardInterrupt:
+        print('KeyboardInterrupt')
+        break
+    except:
+        pass

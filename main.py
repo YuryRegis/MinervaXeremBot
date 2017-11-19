@@ -117,7 +117,7 @@ def new_message(message):
             ida, volta = texto
             ans = DataBase.search_table(ida, volta, date)
         else:
-            palavra = texto
+            palavra = texto[0]
             ans = DataBase.simple_search(palavra)
         bot.send_message(message.chat.id, '{}, aqui esta o resultado da sua busca:'.format(name.title()) + ans)
     except:
@@ -157,7 +157,7 @@ def new_message(message):
 
 def telegram_polling():
     try:
-        bot.polling(none_stop=True, timeout=60) #constantly get messages from Telegram
+        bot.polling(none_stop=True, timeout=60)
     except:
         traceback_error_string=traceback.format_exc()
         with open("Error.Log", "a") as myfile:

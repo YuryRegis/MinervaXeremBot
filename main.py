@@ -3,7 +3,7 @@ import DataBase
 import datetime
 
 
-bot = telebot.TeleBot('501268361:AAG3irEa-JvAwAIDBq9-ycjtBowX4Gu7LbM')
+bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 
 
@@ -14,14 +14,14 @@ def new_message(message):
     bot.send_message(message.chat.id, txt)
 
 
-@bot.message_handler(commands='start', content_types='text')
+@bot.message_handler(commands=['start'], content_types='text')
 def new_message(message):
     name = message.from_user.first_name
     txt = 'Bem-vindo(a) {} ! :)\nDigite /ajuda ou /help para me chamar.'
     bot.send_message(message.chat.id, txt.format(name))
 
 
-@bot.message_handler(commands='carona', content_types='text')
+@bot.message_handler(commands=['carona'], content_types='text')
 def new_message(message):
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
@@ -43,7 +43,7 @@ def new_message(message):
         bot.message_handler(message.chat.id, msg_error)
 
 
-@bot.message_handler(commands='cancela', content_types='text')
+@bot.message_handler(commands=['cancela'], content_types='text')
 def new_message(message):
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
@@ -63,7 +63,7 @@ def new_message(message):
         bot.send_message(message.chat.id, msg_error)
 
 
-@bot.message_handler(commands='excluir', content_types='text')
+@bot.message_handler(commands=['excluir'], content_types='text')
 def new_message(message):
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
@@ -81,7 +81,7 @@ def new_message(message):
         bot.send_message(message.chat.id, msg_error)
 
 
-@bot.message_handler(commands='ofertar', content_types='text')
+@bot.message_handler(commands=['ofertar'], content_types='text')
 def new_message(message):
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
@@ -104,7 +104,7 @@ def new_message(message):
         bot.send_message(message.chat.id, msg_error)
 
 
-@bot.message_handler(commands='buscar', content_types='text')
+@bot.message_handler(commands=['buscar'], content_types='text')
 def new_message(message):
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
@@ -123,7 +123,7 @@ def new_message(message):
         bot.send_message(message.chat.id, msg_error)
 
 
-@bot.message_handler(commands='alterar', content_types='text')
+@bot.message_handler(commands=['alterar'], content_types='text')
 def new_message(message):
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
@@ -147,7 +147,7 @@ def new_message(message):
         bot.send_message(message.chat.id, msg_error)
         
 
-@bot.message_handler(commands='limpar', content_types='text')
+@bot.message_handler(commands=['limpar'], content_types='text')
 def new_message(message):
     date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
     ans = DataBase.clean_table(date)
@@ -157,11 +157,5 @@ def new_message(message):
 print("executando...")
 DataBase.create_table()
 
-try:
-    bot.polling(none_stop=False, timeout=20, interval=0)
-except KeyboardInterrupt:
-    break
-except TypeError:
-    bot.send_message(message.chat.id, msg_error)
-except:
-    pass
+
+bot.polling(none_stop=False, timeout=20, interval=0)

@@ -101,16 +101,16 @@ def change_table(opcao, valor, origem, destino, data):
 
 
 def format_ans(linha, answer):
-    answer += '\nData: {} Hora: {}'.format(linha[0], linha[4])
-    answer += '\nOrigem: {} Destino: {}'.format(linha[2].capitalize(), linha[3].capitalize())
-    answer += '\nMotorista: {} Vagas: {}'.format(linha[1], linha[5])
-    answer += '\nValor: R${:.2f} ou R${:.2f}'.format(linha[6], linha[7])
-    answer += '\nCaroneiros:'
+    answer += '\n<b>Data:</b> {} <b>Hora:</b> {}'.format(linha[0], linha[4])
+    answer += '\n<b>Origem:</b> {} <b>Destino:</b> {}'.format(linha[2].title(), linha[3].title())
+    answer += '\n<b>Motorista:</b> {} <b>Vagas:</b> {}'.format(linha[1].title(), linha[5])
+    answer += '\n<b>Valor:</b> R${:.2f} ou R${:.2f}'.format(linha[6], linha[7])
+    answer += '\n<b>Caroneiros:</b>'
     if len(linha[8]) == 0:
         answer += ' Nenhum'
     else:
         for nome in linha[8].split(' '):
-            answer += ' {}'.format(nome)
+            answer += ' {}'.format(nome.title())
     answer += '\n'
     return answer
 
@@ -118,7 +118,7 @@ def format_ans(linha, answer):
 def search_table(origem, destino, date):
     connection, cursor = connection_on()
     sql = 'SELECT * FROM dados WHERE origem = ? and destino = ? and data = ?'
-    answer = '\n'
+    answer = ''
     for linha in cursor.execute(sql, (origem.lower(), destino.lower(), date)):
         answer += format_ans(linha, answer)
     if len(answer) == 1:
@@ -129,7 +129,7 @@ def search_table(origem, destino, date):
 
 def simple_search(palavra):
     connection, cursor = connection_on()
-    answer = '\n'
+    answer = ''
     valores = cursor.execute('SELECT * FROM dados;').fetchall()
     for linha in valores:
         if palavra.lower() in linha:

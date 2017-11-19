@@ -12,7 +12,7 @@ msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para co
 def new_message(message):
     arquivo, txt = open('help_command.txt','r'), ''
     for linha in arquivo.readlines(): txt += linha
-    bot.send_message(message.chat.id, txt)
+    bot.send_message(message.chat.id, txt, parse_mode='HTML')
 
 
 @bot.message_handler(commands=['start'], content_types='text')
@@ -107,19 +107,21 @@ def new_message(message):
 
 @bot.message_handler(commands=['buscar'], content_types='text')
 def new_message(message):
+    date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
+    DataBase.clean_table(date)
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
     name = '_'.join(name)
     try:
         texto = tuple(message.text.split(maxsplit=1)[1].split())
-        date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
         if len(texto) == 2:
             ida, volta = texto
             ans = DataBase.search_table(ida, volta, date)
         else:
             palavra = texto[0]
             ans = DataBase.simple_search(palavra)
-        bot.send_message(message.chat.id, '{}, aqui esta o resultado da sua busca:'.format(name.title()) + ans)
+        txt = '{}, aqui esta o resultado da sua busca:'
+        bot.send_message(message.chat.id, txt.format(name.title()) + ans, parse_mode='HTML')
     except:
         bot.send_message(message.chat.id, msg_error)
 

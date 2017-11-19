@@ -1,37 +1,43 @@
-       **Manual de comandos do bot**
+       <strong>     Manual de comandos do bot</strong>
 
-/help ou /ajuda - Exibe manual de comandos
-/ofertar - Insere sua oferta de carona no banco de dados
-/buscar - Busca no banco de dados caronas disponiveis
-/alterar - Altera algum dado no banco de dados
-/carona - Incluir seu nome em uma carona ofertada
-/cancela - Cancela carona
-/excluir - Exclui oferta de carona
+/help ou /ajuda - <i>Exibe manual de comandos</i>
+/ofertar - <i>Insere sua oferta de carona no banco de dados</i>
+/buscar - <i>Busca no banco de dados caronas disponiveis</i>
+/alterar - <i>Altera algum dado no banco de dados</i>
+/carona - <i>Incluir seu nome em uma carona ofertada</i>
+/cancela - <i>Cancela carona</i>
+/excluir - <i>Exclui oferta de carona</i>
 
-       **Sintaxe de comandos**
 
-/ofertar ORIGEM DESTINO HORA NºVAGAS VALOR1 VALOR2
-/ofertar DATA ORIGEM DESTINO HORA NºVAGAS VALOR1 VALOR2
-*DATA --> Use DATA para agendar uma oferta
-/excluir HORA
-/excluir DATA HORA
-*DATA --> Use DATA para excluir uma viagem agendada
-/carona NOME_MOTORISTA HORA
-/carona DATA NOME_MOTORIStA HORA
-*DATA --> Use DATA para inclusão em oferta agendada
-/cancela MOTORISTA HORA
-/cancela MOTORISTA DATA HORA
-*DATA --> Use DATA para cancelar carona agendada
-/buscar ORIGEM DESTINO
-/buscar PALAVRA
-*PALAVRA --> data, origem, destino, hora, nome_motorista
-/alterar ORIGEM DESTINO OPCAO ALTERACAO
-/alterar ORIGEM DESTINO DATA OPCAO ALTERACAO
-*DATA --> Use DATA para alterar oferta agendada
-*OPCAO --> data, hora, vagas, origem, destino,
-           valor1 ou valor2
+       <b>     Sintaxe de comandos</b>
 
-       **Exemplos de comandos**
+/ofertar <code>ORIGEM DESTINO HORA NºVAGAS VALOR1 VALOR2</code>
+/ofertar <code>DATA ORIGEM DESTINO HORA NºVAGAS VALOR1 VALOR2</code>
+<b>*DATA</b> --> <i>Use DATA para agendar uma oferta</i>
+
+/excluir <code>HORA</code>
+/excluir <code>DATA HORA</code>
+<b>*DATA</b> --><i> Use DATA para excluir uma viagem agendada</i>
+
+/carona <code>MOTORISTA HORA</code>
+/carona <code>DATA MOTORISTA HORA</code>
+<b>*DATA</b> --> <i>Use DATA para inclusão em oferta agendada</i>
+
+/cancela <code>MOTORISTA HORA</code>
+/cancela <code>MOTORISTA DATA HORA</code>
+<b>*DATA</b> --> <i>Use DATA para cancelar carona agendada</i>
+
+/buscar <code>ORIGEM DESTINO</code>
+/buscar <code>PALAVRA</code>
+<b>*PALAVRA</b> --><i> data, origem, destino, hora ou nome_motorista</i>
+
+/alterar <code>ORIGEM DESTINO OPCAO ALTERACAO</code>
+/alterar <code>ORIGEM DESTINO DATA OPCAO ALTERACAO</code>
+<b>*DATA</b> --> <i>Use DATA para alterar oferta agendada</i>
+<b>*OPCAO</b> --> <i>data, hora, vagas, origem, destino, valor1 ou valor2</i>
+
+
+       <b>     Exemplos de comandos</b>
 
 /ofertar fundao xerem 15:00 3 7.00 7.00
 /ofertar 14/11 xerem fundao 8:00 4 7.00 5.00

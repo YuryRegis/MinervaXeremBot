@@ -1,5 +1,6 @@
 import telebot
 import DataBase
+import traceback
 import datetime
 import time
 
@@ -28,6 +29,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['carona'], content_types='text')
 def new_message(message):
+    bot.send_chat_action(message.chat.id, action='TYPING')
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
     name = '_'.join(name)
@@ -55,6 +57,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['cancela'], content_types='text')
 def new_message(message):
+    bot.send_chat_action(message.chat.id, action='TYPING')
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
     name = '_'.join(name)
@@ -79,6 +82,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['excluir'], content_types='text')
 def new_message(message):
+    bot.send_chat_action(message.chat.id, action='TYPING')
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
     name = '_'.join(name)
@@ -101,6 +105,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['ofertar'], content_types='text')
 def new_message(message):
+    bot.send_chat_action(message.chat.id, action='TYPING')
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
     name = '_'.join(name)
@@ -129,6 +134,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['buscar'], content_types='text')
 def new_message(message):
+    bot.send_chat_action(message.chat.id, action='TYPING')
     date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
     DataBase.clean_table(date)
     name = message.from_user.first_name.split()
@@ -150,6 +156,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['alterar'], content_types='text') # testar
 def new_message(message):
+    bot.send_chat_action(message.chat.id, action='TYPING')
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
     name = '_'.join(name)
@@ -179,6 +186,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['limpar'], content_types='text')
 def new_message(message):
+    bot.send_chat_action(message.chat.id, action='TYPING')
     date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
     ans = DataBase.clean_table(date)
     bot.send_message(message.chat.id, ans)
@@ -186,11 +194,12 @@ def new_message(message):
 
 def telegram_polling():
     try:
-        bot.polling(none_stop=True, timeout=60)
+        bot.polling(none_stop=True, timeout=60, interval=0)
     except:
-        traceback_error_string=traceback.format_exc()
+        traceback_error_string = traceback.format_exc()
         with open("Error.Log", "a") as myfile:
-            myfile.write("\r\n\r\n" + time.strftime("%c")+"\r\n<<ERROR polling>>\r\n"+ traceback_error_string + "\r\n<<ERROR polling>>")
+            myfile.write("\r\n\r\n" + time.strftime(
+                "%c") + "\r\n<<ERROR polling>>\r\n" + traceback_error_string + "\r\n<<ERROR polling>>")
         bot.stop_polling()
         time.sleep(10)
         telegram_polling()

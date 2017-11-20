@@ -14,6 +14,21 @@ def create_table():
     connection.close()
 
 
+def format_ans(linha, answer):
+    answer += '\n<b>Data:</b> {} <b>Hora:</b> {}'.format(linha[0], linha[4])
+    answer += '\n<b>Origem:</b> {} <b>Destino:</b> {}'.format(linha[2].title(), linha[3].title())
+    answer += '\n<b>Motorista:</b> {} <b>Vagas:</b> {}'.format(linha[1].title(), linha[5])
+    answer += '\n<b>Valor:</b> R${:.2f} ou R${:.2f}'.format(linha[6], linha[7])
+    answer += '\n<b>Caroneiros:</b>'
+    if len(linha[8]) == 0:
+        answer += ' Nenhum'
+    else:
+        for nome in linha[8].split(' '):
+            answer += ' {}'.format(nome.title())
+    answer += '\n'
+    return answer
+
+
 def cancel_carona(passageiro, motorista, data, hora):
     connection, cursor = connection_on()
     slc = 'SELECT {} FROM dados where id = ? and data = ? and hora = ?'
@@ -37,17 +52,21 @@ def cancel_carona(passageiro, motorista, data, hora):
         connection.close()
         return 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
     connection.close()
-    return '{} removido(a) do carro de {}.\nViagem: {} às {}'.format(passageiro, motorista, data, hora)
+    return '{} cancelou carona com {}.\nViagem: {} às {}'.format(passageiro, motorista, data, hora)
 
 
 def delet_info(nome, data, hora):
     connection, cursor = connection_on()
     try:
+        ans = ''
         sql = 'DELETE FROM dados WHERE id = ? and data = ? and hora = ?'
+        sql2 = 'SELECT * FROM dados WHERE id = ? and data = ? and hora = ?'
+        for linha in cursor.execute(sql2, (nome, data, hora)):
+            ans += format_ans(linha, ans)
         cursor.execute(sql, (nome, data, hora))
         connection.commit()
         connection.close()
-        return 'Viagem excluida ! :)'
+        return '{} cancelou a seguinte viagem:\n'.format(nome) + ans
     except:
         return 'Sinto muito, viagem não localizada. :('
 
@@ -79,7 +98,7 @@ def insert_carona(motorista, data, hora, passageiro):
         return 'Infelizmente todas as vagas já foram ocupadas para esta viagem. :('
     connection.commit()
     connection.close()
-    return '{} adicionado(a) no caro de {}.\nViagem: {} às {}'.format(passageiro.title(),
+    return '{} adicionado(a) no carro de {}.\nViagem: {} às {}'.format(passageiro.title(),
                                                                       motorista.title(), data, hora)
 
 
@@ -98,21 +117,6 @@ def change_table(opcao, valor, origem, destino, data):
         ans = 'Ooops, algo de errado não esta certo!\nUse o comando /help ou /ajuda para consultar o manual.'
     connection.close()
     return ans
-
-
-def format_ans(linha, answer):
-    answer += '\n<b>Data:</b> {} <b>Hora:</b> {}'.format(linha[0], linha[4])
-    answer += '\n<b>Origem:</b> {} <b>Destino:</b> {}'.format(linha[2].title(), linha[3].title())
-    answer += '\n<b>Motorista:</b> {} <b>Vagas:</b> {}'.format(linha[1].title(), linha[5])
-    answer += '\n<b>Valor:</b> R${:.2f} ou R${:.2f}'.format(linha[6], linha[7])
-    answer += '\n<b>Caroneiros:</b>'
-    if len(linha[8]) == 0:
-        answer += ' Nenhum'
-    else:
-        for nome in linha[8].split(' '):
-            answer += ' {}'.format(nome.title())
-    answer += '\n'
-    return answer
 
 
 def search_table(origem, destino, date):
@@ -134,8 +138,8 @@ def simple_search(palavra):
     for linha in valores:
         if palavra.lower() in linha:
             answer += format_ans(linha, answer)
-    if len(answer) == 1:
-        answer = '\nNenhum resultado para {}'.format(palavra.capitalize())
+    if len(answer) == 0:
+        answer = '\nNenhum resultado para "{}"'.format(palavra.capitalize())
     connection.close()
     return answer
 

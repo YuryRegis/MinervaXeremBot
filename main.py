@@ -31,17 +31,19 @@ def new_message(message):
     texto = [texto[x].lower() for x in range(len(texto))]
     try:
         if len(texto) == 2:
-            date = datetime.datetime.fromtimestamp(message.date).strftime('%m/%d')
+            date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
             motorista, hora = texto[0], texto[1]
+            print(motorista, date, hora)
         else:
             date, motorista, hora = texto[0], texto[1], texto[2]
         if DataBase.check_value(motorista, date):
             ans = DataBase.insert_carona(motorista, date, hora, name)
-            bot.message_handler(message.chat.id, ans)
+            print(ans)
+            bot.send_message(message.chat.id, ans)
         else:
-            bot.message_handler(message.chat.id, 'Não localizamos oferta de {} para {}. :('.format(motorista, date))
+            bot.send_message(message.chat.id, 'Não localizamos oferta de {} para {}. :('.format(motorista, date))
     except:
-        bot.message_handler(message.chat.id, msg_error)
+        bot.send_message(message.chat.id, msg_error)
 
 
 @bot.message_handler(commands=['cancela'], content_types='text')
@@ -77,7 +79,7 @@ def new_message(message):
         else:
             date, hora = texto[0], texto[1]
         ans = DataBase.delet_info(name, date, hora)
-        bot.send_message(message.chat.id, ans)
+        bot.send_message(message.chat.id, ans, parse_mode='HTML')
     except:
         bot.send_message(message.chat.id, msg_error)
 

@@ -95,7 +95,8 @@ def insert_carona(motorista, data, hora, passageiro):
         cursor.execute(sql.format('vagas'), (vagas, motorista, data, hora))
     else:
         connection.close()
-        return 'Infelizmente todas as vagas já foram ocupadas para esta viagem. :('
+        txt = '{} solicitou uma carona de {} ({} às {}) porem não existe mais vagas para esta viagem. :('
+        return txt.format(passageiro.title, motorista.title, data, hora)
     connection.commit()
     connection.close()
     return '{} adicionado(a) no carro de {}.\nViagem: {} às {}'.format(passageiro.title(),

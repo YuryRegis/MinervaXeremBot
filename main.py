@@ -17,9 +17,13 @@ def new_message(message):
 
 @bot.message_handler(commands=['start'], content_types='text')
 def new_message(message):
+    print('Nova conexão com ID: {}'.format(message.chat.id))
     name = message.from_user.first_name
     txt = 'Bem-vindo(a) {} ! :)\nDigite /ajuda ou /help para me chamar.'
     bot.send_message(message.chat.id, txt.format(name))
+    if message.chat.id != 473906011:
+        notify = 'Nova conexão de {} com ID {}.'
+        bot.send_message(473906011, notify.format(name, message.chat.id))
 
 
 @bot.message_handler(commands=['carona'], content_types='text')
@@ -38,8 +42,11 @@ def new_message(message):
             date, motorista, hora = texto[0], texto[1], texto[2]
         if DataBase.check_value(motorista, date):
             ans = DataBase.insert_carona(motorista, date, hora, name)
-            print(ans)
-            bot.send_message(message.chat.id, ans)
+            if message.chat.id == -209736221:
+                bot.send_message(message.chat.id, ans)
+            else:
+                bot.send_message(message.chat.id, ans)
+                bot.send_message(-209736221, ans)
         else:
             bot.send_message(message.chat.id, 'Não localizamos oferta de {} para {}. :('.format(motorista, date))
     except:
@@ -61,7 +68,11 @@ def new_message(message):
         else:
             motorista, date, hora = texto[0], texto[1], texto[2]
             ans = DataBase.cancel_carona(name, motorista, date, hora)
-        bot.send_message(message.chat.id, ans)
+        if message.chat.id == -209736221:
+            bot.send_message(message.chat.id, ans)
+        else:
+            bot.send_message(-209736221, ans)
+            bot.send_message(message.chat.id, ans)
     except:
         bot.send_message(message.chat.id, msg_error)
 
@@ -79,7 +90,11 @@ def new_message(message):
         else:
             date, hora = texto[0], texto[1]
         ans = DataBase.delet_info(name, date, hora)
-        bot.send_message(message.chat.id, ans, parse_mode='HTML')
+        if message.chat.id == -209736221:
+            bot.send_message(message.chat.id, ans, parse_mode='HTML')
+        else:
+            bot.send_message(-209736221, ans, parse_mode='HTML')
+            bot.send_message(message.chat.id, ans, parse_mode='HTML')
     except:
         bot.send_message(message.chat.id, msg_error)
 
@@ -102,7 +117,12 @@ def new_message(message):
             date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
             ida, volta, hour, vagas, v1, v2 = tuple(texto)
         DataBase.insert_table(date, name, ida, volta, hour, vagas, v1, v2)
-        bot.send_message(message.chat.id, '{}, sua oferta foi adicionada.'.format(name.title()))
+        if message.chat.id == -209736221:
+            bot.send_message(message.chat.id, '{}, sua oferta foi adicionada! :)'.format(name.title()))
+        else:
+            txt = '{} adicionou uma nova oferta de carona! :)'
+            bot.send_message(-209736221, txt.format(name.title()))
+            bot.send_message(message.chat.id, '{}, sua oferta foi adicionada! :)'.format(name.title()))
     except:
         bot.send_message(message.chat.id, msg_error)
 
@@ -128,13 +148,14 @@ def new_message(message):
         bot.send_message(message.chat.id, msg_error)
 
 
-@bot.message_handler(commands=['alterar'], content_types='text')
+@bot.message_handler(commands=['alterar'], content_types='text') # testar
 def new_message(message):
     name = message.from_user.first_name.split()
     name = [x.lower() for x in name]
     name = '_'.join(name)
     try:
         texto = tuple(message.text.split(maxsplit=1)[1].split())
+        texto = [x.lower() for x in texto]
         date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
         if DataBase.check_value(name, date):
             if len(texto) == 5:
@@ -144,7 +165,11 @@ def new_message(message):
                 origem, destino, opcao, valor = texto[0], texto[1], texto[2], texto[3]
                 selecao = DataBase.select_date_destiny(origem, destino, date)
             ans = DataBase.change_table(opcao, valor, selecao[0][2], selecao[0][3], selecao[0][0])
-            bot.send_message(message.chat.id, ans)
+            if message.chat.id == -209736221:
+                bot.send_message(message.chat.id, ans)
+            else:
+                txt = '{} fez uma nova alteração em uma oferta existente ({}).'
+                bot.send_message(-209736221, txt.format(name.title(), opcao))
         else:
             ans = '{}, somente o motorista pode alterar/excluir viagem'.format(name.title())
             bot.send_message(message.chat.id, ans)

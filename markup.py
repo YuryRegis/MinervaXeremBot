@@ -1,6 +1,6 @@
 from telebot import types
 
-markuprmv = types.ReplyKeyboardRemove()
+markuprmv = types.ReplyKeyboardHide()
 motoristas = {}
 selection = {}
 ofertas = {}

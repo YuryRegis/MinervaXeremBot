@@ -9,7 +9,9 @@ import time
 bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
-group_id = -209736221
+global group_id
+group_id = -1001379699085
+global adm_id
 adm_id = 473906011
 
 
@@ -18,6 +20,14 @@ def new_message(message):
     arquivo, txt = open('help_command.txt', 'r'), ''
     for linha in arquivo.readlines(): txt += linha
     bot.send_message(message.from_user.id, txt, parse_mode='HTML')
+
+
+@bot.message_handler(commands=['ping'], content_types='text')
+def new_message(message):
+    print(message.chat.id)
+    group_id = message.chat.id
+    bot.send_message(group_id, 'Pong! :)')
+    bot.send_message(adm_id, 'Group_ID: {}'.format(group_id))
 
 
 @bot.message_handler(commands=['start'], content_types='text')
@@ -302,24 +312,23 @@ def new_markup_message(message):
 def new_markup_message(message):
     bot.send_chat_action(message.from_user.id, action='TYPING')
     oferta = markup.ofertas[message.from_user.id]
-    try:
-        if message.text == '/sair':
-            sair(message)
-        else:
+    if message.text == '/sair':
+        sair(message)
+    else:
+        try:
             valor2 = float(message.text.replace(',', '.'))
             oferta.valor2 = valor2
             ans = DataBase.insert_table(oferta.data, oferta.motorista, oferta.origem, oferta.destino,
-                                  oferta.hora, oferta.vagas, oferta.valor1, oferta.valor2, message.from_user.id)
+                                    oferta.hora, oferta.vagas, oferta.valor1, oferta.valor2, message.from_user.id)
             print('InsertDataBase ?', ans)
             bot.send_message(message.from_user.id, 'Sua oferta foi adicionada ao banco de dados.')
             txt = '{} adincionou uma nova oferta de viagem. :)'.format(oferta.motorista.title().replace('_', " "))
             bot.send_message(group_id, txt)
             sair(message)
             print(markup.ofertas, markup.userStep)
-    except NameError:
-        print("NameError: name 'knownUsers' is not defined")
-    except:
-        bot.reply_to(message, 'Oops! Digite apenas números separados por vírgula ou ponto (EX. 7,00):')
+        except:
+            bot.reply_to(message, 'Oops! Digite apenas números separados por vírgula ou ponto (EX. 7,00):')
+
 
 
 @bot.message_handler(func=lambda message: markup.get_user_step(message.from_user.id) == 3)

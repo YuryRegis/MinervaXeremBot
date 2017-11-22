@@ -6,7 +6,7 @@ import markup
 import time
 
 
-bot = telebot.TeleBot('455265770:AAHdtANXvA3N7jUonXyur5HPQ9m7KcVOwjs')
+bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardRemove()
 group_id = -209736221

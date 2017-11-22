@@ -5,8 +5,8 @@ import traceback
 import markup
 import time
 
-
-bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
+token = # <Token do seu bot gerado pelo @BotFather>
+bot = telebot.TeleBot(token)
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
 global group_id

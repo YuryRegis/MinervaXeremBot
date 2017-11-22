@@ -48,18 +48,20 @@ def new_message(message):
 
 
 def sair(message):
+    txt = 'Encerrando conexões...\nConcluído !\nClique em /menu para nova consulta.'
     try:
         bot.send_chat_action(message.chat.id, action='TYPING')
         del markup.userStep[message.from_user.id]
         del markup.ofertas[message.from_user.id]
         del markup.motoristas[message.from_user.id]
         del markup.selection[message.from_user.id]
-        txt = 'Encerrando conexões...\n\nConcluído !\nClique em /menu para nova consulta.'
         bot.send_message(message.from_user.id, txt, reply_markup=removemkp)
     except KeyError:
         print(message.from_user.id, '- Chave não localizada (KeyError).')
+        bot.send_message(message.from_user.id, txt, reply_markup=removemkp)
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
+        bot.send_message(message.from_user.id, txt, reply_markup=removemkp)
 
 
 @bot.message_handler(commands=['sair'], content_types='text')
@@ -300,7 +302,7 @@ def new_markup_message(message):
             valor1 = float(message.text.replace(',', '.'))
             oferta.valor1 = valor1
             bot.send_message(message.from_user.id, 'Valor da passagem (baldeação):')
-            markup.ofertas[message.from_user.id] = oferta
+            markup.ofertas[message.from_user.id] = ofertaß
             markup.userStep[message.from_user.id] = 27
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
@@ -322,8 +324,9 @@ def new_markup_message(message):
                                     oferta.hora, oferta.vagas, oferta.valor1, oferta.valor2, message.from_user.id)
             print('InsertDataBase ?', ans)
             bot.send_message(message.from_user.id, 'Sua oferta foi adicionada ao banco de dados.')
-            txt = '{} adincionou uma nova oferta de viagem. :)'.format(oferta.motorista.title().replace('_', " "))
-            bot.send_message(group_id, txt)
+            txt = '{} adincionou uma nova oferta de viagem:\n)'.format(oferta.motorista.title().replace('_', " "))
+            txt += DataBase.simple_search(str(message.from_user.id))
+            bot.send_message(group_id, txt, parse_mode='HTML')
             sair(message)
             print(markup.ofertas, markup.userStep)
         except:
@@ -436,6 +439,7 @@ def new_markup_message(message):
     cancela = markup.selection[message.from_user.id]
     escolha = message.text
     if escolha == '/sair':
+        bot.send_message(message.from_user.id, 'Encerrando menu...', reply_markup=removemkp)
         sair(message)
     elif escolha in motoristas:
         cancela.motorista = escolha
@@ -485,19 +489,20 @@ def new_markup_message(message):
                                                  cancela.motorista, cancela.data, cancela.hora)
 
                     if ans == 0:
-                        bot.send_message(message.from_user.id, 'Ooops!\nVoce não faz parte desta carona.')
+                        txt = 'Ooops!\nVoce não faz parte desta carona.'
+                        bot.send_message(message.from_user.id, txt, reply_markup=removemkp)
                         sair(message)
                     elif ans == -1:
-                        bot.send_message(message.from_user.id, msg_error)
+                        bot.send_message(message.from_user.id, msg_error, reply_markup=removemkp)
                         sair(message)
                     else:
-                        bot.send_message(group_id, ans)
+                        bot.send_message(group_id, ans, parse_mode='HTML')
                         bot.send_message(message.from_user.id, 'Carona Cancelada!')
                         sair(message)
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except:
-        bot.send_message(message.from_user.id, msg_error)
+        bot.send_message(message.from_user.id, msg_error, reply_markup=removemkp)
         sair(message)
 
 

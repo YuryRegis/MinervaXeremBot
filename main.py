@@ -10,9 +10,9 @@ bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
 global group_id
-group_id = -1001379699085
+group_id = # <id do seu chat de grupo/supergrupo>
 global adm_id
-adm_id = 473906011
+adm_id = # <id do administrador do seu grupo/supergrupo>
 
 
 @bot.message_handler(commands=['ajuda', 'help'], content_types='text')

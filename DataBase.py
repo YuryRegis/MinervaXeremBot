@@ -10,7 +10,7 @@ def connection_on():
 def create_table():
     connection, cursor = connection_on()
     cursor.execute('CREATE TABLE IF NOT EXISTS dados (data txt, id txt, origem text, destino txt, \
-                    hora text, vagas integer, valor1 real, valor2 real, caroneiros txt)')
+                    hora text, vagas integer, valor1 real, valor2 real, caroneiros txt, pass_id txt, tgid int)')
     connection.close()
 
 
@@ -29,28 +29,53 @@ def format_ans(linha, answer):
     return answer
 
 
-def cancel_carona(passageiro, motorista, data, hora):
+def search_byid(tgid, key):
+    try:
+        connection, cursor = connection_on()
+        sql = 'SELECT {} FROM dados where tgid = ?'.format(key)
+        ans = tuple(cursor.execute(sql, (tgid,)).fetchall())
+        print(ans)
+        ans = [x[0] for x in ans]
+        connection.close()
+        return ans
+    except:
+        print('Search_byid?', False)
+        return 0
+
+
+def cancel_carona(passageiro, pass_id, motorista, data, hora):
     connection, cursor = connection_on()
     slc = 'SELECT {} FROM dados where id = ? and data = ? and hora = ?'
     upd = 'UPDATE dados set {} = ? where id = ? and data = ? and hora = ?'
     vagas = list(cursor.execute(slc.format('vagas'), (motorista, data, hora)))
-    vagas = vagas[0][0]
     try:
-        caroneiros = list(cursor.execute(slc.format('caroneiros'), (motorista, data, hora)))
+        vagas = vagas[0][0]
+    except IndexError:
+        vagas = 0
+    try:
+        caroneiros = list(cursor.execute(slc.format('caroneiros'), (motorista.lower(), data, hora)))
+        print("Caroneiros?", caroneiros)
         caroneiros = [x.lower() for x in caroneiros[0]]
+        caroneiros_id = list(cursor.execute(slc.format('pass_id'), (motorista.lower(), data, hora)))
+        print("Caroneiros?", caroneiros_id)
+        caroneiros_id = [x for x in caroneiros_id[0]]
         caroneiros = caroneiros[0].split()
-        if len(caroneiros) == 0 or passageiro.lower() not in caroneiros:
+        caroneiros_id = caroneiros_id[0].split()
+        if len(caroneiros) == 0 or str(pass_id) not in caroneiros_id:
             connection.close()
-            return 'Oops! {}, seu nome não consta na lista de caroneiros desta viagem.'.format(passageiro.title())
+            return 0
         caroneiros.remove(passageiro.lower())
+        caroneiros_id.remove(str(pass_id))
         caroneiros = [x.title() for x in caroneiros]
         caroneiros = ' '.join(caroneiros)
+        caroneiros_id = ' '.join(caroneiros_id)
         cursor.execute(upd.format('caroneiros'), (caroneiros, motorista, data, hora))
+        cursor.execute(upd.format('pass_id'), (caroneiros_id, motorista, data, hora))
         cursor.execute(upd.format('vagas'), (vagas+1, motorista, data, hora))
         connection.commit()
     except:
         connection.close()
-        return 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
+        return -1
     connection.close()
     return '{} cancelou carona com {}.\nViagem: {} às {}'.format(passageiro, motorista, data, hora)
 
@@ -71,36 +96,75 @@ def delet_info(nome, data, hora):
         return 'Sinto muito, viagem não localizada. :('
 
 
-def insert_table(data, id, ida, volta, hora, vagas, valor1, valor2, caroneiros=''):
+def delet_info_byid(tgid, hora):
     connection, cursor = connection_on()
-    cursor.execute('INSERT INTO dados (data, id, origem, destino, hora, vagas, valor1, valor2, caroneiros) '
-                   'VALUES(?,?,?,?,?,?,?,?,?)', (data, id.lower(), ida.lower(), volta.lower(),
-                                                 hora, vagas, valor1, valor2, caroneiros))
-    connection.commit()
-    connection.close()
-
-
-def insert_carona(motorista, data, hora, passageiro):
-    connection, cursor = connection_on()
-    sql = 'UPDATE dados SET {} = ? where id = ? and data = ? and hora = ?'
-    sql2 = 'SELECT {} FROM dados where id = ? and data = ? and hora = ?'
-    vagas = list(cursor.execute(sql2.format('vagas'), (motorista, data, hora)))
-    pas_atual = list(cursor.execute(sql2.format('caroneiros'), (motorista, data, hora)))
-    pas_atual = pas_atual[0][0]
-    vagas = vagas[0][0]
-    if vagas > 0:
-        vagas -= 1
-        pas_atual += ' {}'.format(passageiro)
-        cursor.execute(sql.format('caroneiros'), (pas_atual, motorista, data, hora))
-        cursor.execute(sql.format('vagas'), (vagas, motorista, data, hora))
-    else:
+    try:
+        ans = ''
+        nome = search_byid(tgid, 'id')
+        sql = 'DELETE FROM dados WHERE tgid = ? and hora = ?'
+        sql2 = 'SELECT * FROM dados WHERE tgid = ? and hora = ?'
+        for linha in cursor.execute(sql2, (tgid, hora)):
+            ans += format_ans(linha, ans)
+        cursor.execute(sql, (tgid, hora))
+        connection.commit()
         connection.close()
-        txt = '{} solicitou uma carona de {} ({} às {}) porem não existe mais vagas para esta viagem. :('
-        return txt.format(passageiro.title, motorista.title, data, hora)
-    connection.commit()
-    connection.close()
-    return '{} adicionado(a) no carro de {}.\nViagem: {} às {}'.format(passageiro.title(),
+        return '{} cancelou a seguinte viagem:\n'.format(nome[0].title()) + ans
+    except:
+        connection.close()
+        return 'Sinto muito, viagem não localizada. :('
+
+
+def insert_table(data, id, ida, volta, hora, vagas, valor1, valor2, tgid, caroneiros='', pass_id=''):
+    try:
+        connection, cursor = connection_on()
+        cursor.execute('INSERT INTO dados (data, id, origem, destino, hora, vagas, valor1, valor2, caroneiros, pass_id,'
+                       ' tgid) VALUES(?,?,?,?,?,?,?,?,?,?,?)', (data, id.lower(), ida.lower(), volta.lower(),
+                                                     hora, vagas, valor1, valor2, caroneiros, pass_id, tgid))
+        connection.commit()
+        connection.close()
+        return True
+    except:
+        return False
+
+
+def insert_carona(motorista, data, hora, passageiro, id):
+    try:
+        connection, cursor = connection_on()
+        sql = 'UPDATE dados SET {} = ? where id = ? and data = ? and hora = ?'
+        sql2 = 'SELECT {} FROM dados where id = ? and data = ? and hora = ?'
+        vagas = list(cursor.execute(sql2.format('vagas'), (motorista, data, hora)))
+        pas_atual = list(cursor.execute(sql2.format('caroneiros'), (motorista, data, hora)))
+        pas_id = list(cursor.execute(sql2.format('pass_id'), (motorista, data, hora)))
+        pas_atual = pas_atual[0][0]
+        pas_id = pas_id[0][0]
+        vagas = vagas[0][0]
+        if vagas > 0:
+            vagas -= 1
+            pas_atual += ' {}'.format(passageiro)
+            pas_id += ' {}'.format(id)
+            cursor.execute(sql.format('caroneiros'), (pas_atual, motorista, data, hora))
+            cursor.execute(sql.format('vagas'), (vagas, motorista, data, hora))
+        else:
+            connection.close()
+            return 0
+        connection.commit()
+        connection.close()
+        return '{} adicionado(a) no carro de {}.\nViagem: {} às {}'.format(passageiro.title(),
                                                                       motorista.title(), data, hora)
+    except IndexError:
+        return 0
+    except:
+        return -1
+
+
+def extract_hora(motorista, data):
+    connection, cursor = connection_on()
+    sql = 'SELECT hora from dados WHERE id = ? and data = ?'
+    ans = list(cursor.execute(sql, (motorista.lower(), data)))
+    ans = [data[0] for data in ans]
+    connection.close()
+    return ans
+
 
 
 def change_table(opcao, valor, origem, destino, data):
@@ -132,17 +196,30 @@ def search_table(origem, destino, date):
     return answer
 
 
+def exctract_coluna(coluna):
+    connection, cursor = connection_on()
+    valores = cursor.execute('SELECT {} FROM dados;'.format(coluna))
+    valores = [valor[0] for valor in valores]
+    connection.close()
+    return valores
+
+
 def simple_search(palavra):
     connection, cursor = connection_on()
     answer = ''
-    valores = cursor.execute('SELECT * FROM dados;').fetchall()
-    for linha in valores:
-        if palavra.lower() in linha:
-            answer += format_ans(linha, answer)
-    if len(answer) == 0:
+    aux = tuple([palavra.lower() for x in range (5)])
+    txt = 'SELECT * FROM dados WHERE id = ? or origem = ? or destino = ? or data = ? or tgid = ?'
+    valores = tuple(cursor.execute(txt, aux))
+    valores = [x for x in valores]
+    if len(valores) == 0:
         answer = '\nNenhum resultado para "{}"'.format(palavra.capitalize())
-    connection.close()
-    return answer
+        return answer
+    else:
+        print(len(valores), valores)
+        for lista in valores:
+            answer += format_ans(lista, '')
+        connection.close()
+        return answer
 
 
 def select_date_destiny(origem, destino, data):

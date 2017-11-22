@@ -627,7 +627,7 @@ def new_message(message):
             date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
             ida, volta, hour, vagas, v1, v2 = tuple(texto)
         DataBase.insert_table(date, name, ida, volta, hour, vagas, v1, v2, message.from_user.id)
-        if message.chat.id > 0:
+        if message.chat.id < 0:
             bot.send_message(message.chat.id, '{}, sua oferta foi adicionada! :)'.format(name.title()))
         else:
             txt = '{} adicionou uma nova oferta de carona! :)'

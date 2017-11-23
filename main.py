@@ -5,14 +5,14 @@ import traceback
 import markup
 import time
 
-token = # <Token do seu bot gerado pelo @BotFather>
-bot = telebot.TeleBot(token)
+Token = '' #  <Token gerado pelo Telegram via @BotFather>
+bot = telebot.TeleBot(Token)
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
 global group_id
-group_id = # <id do seu chat de grupo/supergrupo>
+group_id = '' #  <id do seu grupo ou supergrupo>
 global adm_id
-adm_id = # <id do administrador do seu grupo/supergrupo>
+adm_id = '' #  <id do administrador do grupo/bot>
 
 
 @bot.message_handler(commands=['ajuda', 'help'], content_types='text')

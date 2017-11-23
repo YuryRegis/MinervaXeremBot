@@ -11,7 +11,17 @@ def create_table():
     connection, cursor = connection_on()
     cursor.execute('CREATE TABLE IF NOT EXISTS dados (data txt, id txt, origem text, destino txt, \
                     hora text, vagas integer, valor1 real, valor2 real, caroneiros txt, pass_id txt, tgid int)')
+    cursor.execute('CREATE TABLE IF NOT EXISTS cadastro (username txt, tgid int)')
     connection.close()
+
+
+def check_cadastro(tgid):
+    connection, cursor = connection_on()
+    sql = 'SELECT * FROM cadastro WHERE tgid = ?'
+    ans = list(cursor.execute(sql, (tgid,)))
+    if len(ans) == 0: return False
+    connection.close()
+    return True
 
 
 def format_ans(linha, answer):
@@ -112,6 +122,49 @@ def delet_info_byid(tgid, hora):
     except:
         connection.close()
         return 'Sinto muito, viagem não localizada. :('
+
+
+def insert_cadastro(username, tgid):
+    try:
+        if not check_cadastro(tgid):
+            print('{} ainda não cadastrado. Cadastrando agora...'.format(username), end=' ')
+            connection, cursor = connection_on()
+            sql = 'INSERT INTO cadastro (username, tgid) VALUES(?, ?)'
+            cursor.execute(sql, (username, tgid))
+            connection.commit()
+            connection.close()
+            print('OK!')
+            return True
+        else:
+            print('{} ja cadastrado'.format(username))
+            return 0
+    except:
+        print('Erro ao cadastrar usuario {} id {} no banco de dados'.format(username, tgid))
+        return False
+
+
+def len_cadastrados():
+    connection, cursor = connection_on()
+    try:
+        user_ids = list(cursor.execute('SELECT tgid FROM cadastro', ()))
+        connection.close()
+        return len(user_ids)
+    except:
+        connection.close()
+        return 0
+
+
+def cadastrados():
+    connection, cursor = connection_on()
+    sql = 'SELECT {} FROM cadastro'
+    txt = ' <b>User_id</b>  <b>User</b>\n'
+    usernames = list(cursor.execute(sql.format('username'), ()))
+    usernames = [user[0] for user in usernames]
+    user_ids = list(cursor.execute(sql.format('tgid'), ()))
+    user_ids = [user[0] for user in user_ids]
+    for selection in range(len(usernames)): txt += '\n{} - {}'.format(user_ids[selection], usernames[selection])
+    connection.close()
+    return txt
 
 
 def insert_table(data, id, ida, volta, hora, vagas, valor1, valor2, tgid, caroneiros='', pass_id=''):

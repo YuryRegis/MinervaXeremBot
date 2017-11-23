@@ -5,33 +5,47 @@ import traceback
 import markup
 import time
 
-Token = '' #  <Token gerado pelo Telegram via @BotFather>
-bot = telebot.TeleBot(Token)
+
+bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
 global group_id
-group_id = '' #  <id do seu grupo ou supergrupo>
+group_id = -1001379699085
 global adm_id
-adm_id = '' #  <id do administrador do grupo/bot>
+adm_id = [473906011]
 
 
 @bot.message_handler(commands=['ajuda', 'help'], content_types='text')
 def new_message(message):
     arquivo, txt = open('help_command.txt', 'r'), ''
     for linha in arquivo.readlines(): txt += linha
-    bot.send_message(message.from_user.id, txt, parse_mode='HTML')
+    bot.send_message(message.from_user.id, txt, parse_mode='HTML', reply_markup=removemkp)
 
 
 @bot.message_handler(commands=['ping'], content_types='text')
 def new_message(message):
     print(message.chat.id)
     group_id = message.chat.id
-    bot.send_message(group_id, 'Pong! :)')
-    bot.send_message(adm_id, 'Group_ID: {}'.format(group_id))
+    bot.send_message(message.chat.id, 'Pong! :)')
+    if message.chat.id < 0:
+        for id in adm_id: bot.send_message(id, 'Group_ID: {}'.format(group_id))
+
+
+def cadastro(username, tgid):
+    answer = DataBase.insert_cadastro(username, tgid)
+    print(answer)
+    if answer == 0: pass
+    elif answer:
+        for id in adm_id:
+            bot.send_message(id, '{} cadastrado com id {}.'.format(username, tgid))
+
+    else:
+        for id in adm_id: bot.send_message(id, 'Erro ao cadastrar {}.'.format(username))
 
 
 @bot.message_handler(commands=['start'], content_types='text')
 def new_message(message):
+    cadastro(message.from_user.first_name, message.from_user.id)
     bot.send_chat_action(message.chat.id, action='TYPING')
     print('Nova conexão com ID: {}'.format(message.chat.id))
     markup.add_know_users(message.chat.id)
@@ -42,9 +56,9 @@ def new_message(message):
         bot.send_message(message.chat.id, txt.format(name))
     else:
         bot.send_message(message.chat.id, txt.format(name))
-    if message.chat.id != adm_id:
+    if message.chat.id not in adm_id:
         notify = 'Nova conexão de {} com ID {}.'
-        bot.send_message(adm_id, notify.format(name, message.chat.id))
+        for id in adm_id: bot.send_message(id, notify.format(name, message.chat.id))
 
 
 def sair(message):
@@ -72,6 +86,7 @@ def new_message(message):
 
 @bot.message_handler(commands=['menu'], content_types='text')
 def new_markup_message(message):
+    cadastro(message.from_user.first_name, message.from_user.id)
     bot.send_chat_action(message.from_user.id, action='TYPING')
     mkp = markup.main_menu()
     txt = 'As suas ordens! :)\nO que gostaria de fazer?'
@@ -94,7 +109,7 @@ def new_message(message):
         elif len(texto) == 3:
             date, motorista, hora = texto[0], texto[1], texto[2]
         else:
-            bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         if DataBase.check_value(motorista, date):
             ans = DataBase.insert_carona(motorista, date, hora, name, message.from_user.id)
             if ans == 0:
@@ -113,9 +128,9 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
     except:
-        bot.send_message(message.chat.id, msg_error)
+        bot.reply_to(message, msg_error)
 
 
 @bot.message_handler(commands=['cancela'], content_types='text')
@@ -134,7 +149,7 @@ def new_message(message):
             motorista, date, hora = texto[0], texto[1], texto[2]
             ans = DataBase.cancel_carona(name, message.from_user.id, motorista, date, hora)
         else:
-            bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         if message.chat.id == group_id:
             bot.send_message(message.chat.id, ans)
         else:
@@ -143,9 +158,9 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
     except:
-        bot.send_message(message.chat.id, msg_error)
+        bot.reply_to(message, msg_error)
 
 
 @bot.message_handler(commands=['excluir'], content_types='text')
@@ -161,7 +176,7 @@ def new_message(message):
         elif len(texto) == 2:
             date, hora = texto[0], texto[1]
         else:
-            bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         ans = DataBase.delet_info(name, date, hora)
         if message.chat.id == group_id:
             bot.send_message(message.chat.id, ans, parse_mode='HTML')
@@ -171,9 +186,9 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
     except:
-        bot.send_message(message.chat.id, msg_error)
+        bot.reply_to(message, msg_error)
 
 
 @bot.message_handler(commands=['ofertar'], content_types='text')
@@ -189,7 +204,7 @@ def new_message(message):
                                            float(texto[6].replace(',', '.'))
             date, ida, volta, hour, vagas, v1, v2 = tuple(texto)
         elif len(texto) == 0:
-            bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         else:
             texto[3], texto[4], texto[5] = int(texto[3]), float(texto[4].replace(',', '.')), \
                                            float(texto[5].replace(',', '.'))
@@ -205,9 +220,9 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
     except:
-        bot.send_message(message.chat.id, msg_error)
+        bot.reply_to(message, msg_error)
 
 
 @bot.message_handler(commands=['buscar'], content_types='text')
@@ -226,15 +241,15 @@ def new_message(message):
             palavra = texto[0]
             ans = DataBase.simple_search(palavra)
         else:
-            bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         txt = '{}, aqui esta o resultado da sua busca:'
         bot.send_message(message.chat.id, txt.format(name.title()) + ans, parse_mode='HTML')
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
     except:
-        bot.send_message(message.chat.id, msg_error)
+        bot.reply_to(message, msg_error)
 
 
 @bot.message_handler(commands=['alterar'], content_types='text')  # testar
@@ -247,7 +262,7 @@ def new_message(message):
         texto = [x.lower() for x in texto]
         date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
         if len(texto) == 0:
-            bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         elif DataBase.check_value(name, date):
             if len(texto) == 5:
                 origem, destino, date, opcao, valor = texto[0], texto[1], texto[2], texto[3], texto[4]
@@ -267,16 +282,36 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :}\nDigite ou clique em /menu para começar.')
+        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
     except:
-        bot.send_message(message.chat.id, msg_error)
+        bot.reply_to(message, msg_error)
+
+
+@bot.message_handler(commands=['users'], content_types='text')
+def new_message(message):
+    if message.from_user.id not in adm_id:
+        bot.reply_to(message, 'Apenas administradores podem usar este comando.')
+    else:
+        try:
+            texto = message.text.split(maxsplit=1)[1].split()
+            if texto[0] == 'len':
+                ans = DataBase.len_cadastrados()
+                bot.reply_to(message, '{} usuários.'.format(ans))
+            else:
+                bot.reply_to(message.from_user.id, msg_error)
+        except:
+            ans = DataBase.cadastrados()
+            bot.send_message(message.chat.id, ans, parse_mode='HTML')
 
 
 @bot.message_handler(commands=['limpar'], content_types='text')
 def new_message(message):
-    date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
-    ans = DataBase.clean_table(date)
-    bot.send_message(message.chat.id, ans)
+    if message.from_user.id not in adm_id:
+        bot.reply_to(message, 'Apenas administradores podem usar este comando.')
+    else:
+        date = datetime.datetime.fromtimestamp(message.date).strftime('%d/%m')
+        ans = DataBase.clean_table(date)
+        bot.send_message(message.chat.id, ans)
 
 
 # =========================== Interação em chat privado com @MinervaXeremBot ============================
@@ -635,7 +670,6 @@ def new_markup_message(message):
         sair(message)
 
 
-
 @bot.message_handler(func=lambda message: markup.get_user_step(message.from_user.id) == 5)
 def new_markup_message(message):
     bot.send_chat_action(message.from_user.id, action='TYPING')
@@ -732,7 +766,7 @@ def telegram_polling():
         time.sleep(20)
         telegram_polling()
         hora = datetime.datetime.fromtimestamp(time.time()).strftime('%d/%m %H:%M')
-        bot.send_message(adm_id, 'RecursionError {}'.format(hora))
+        for id in adm_id: bot.send_message(id, 'RecursionError {}'.format(hora))
     except:
         traceback_error_string = traceback.format_exc()
         with open("Error.Log", "a") as myfile:

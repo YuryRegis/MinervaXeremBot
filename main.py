@@ -5,14 +5,13 @@ import traceback
 import markup
 import time
 
-token = '' #  <Token geradp pelo telegram via @BotFather>
-bot = telebot.TeleBot(token)
+bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
 global group_id
-group_id = ''  #  <id do grupo/supergrupo que o bot irá administrar>
+group_id = -1001379699085
 global adm_id
-adm_id = [] #  <Lista de id's dos administradores do bot/grupo/supergrupo>
+adm_id = [473906011]
 
 
 @bot.message_handler(commands=['ajuda', 'help'], content_types='text')
@@ -541,7 +540,7 @@ def new_markup_message(message):
             valor1 = float(message.text.replace(',', '.'))
             oferta.valor1 = valor1
             bot.send_message(message.from_user.id, 'Valor da passagem (baldeação):')
-            markup.ofertas[message.from_user.id] = ofertaß
+            markup.ofertas[message.from_user.id] = oferta
             markup.userStep[message.from_user.id] = 27
     except NameError:
         print("NameError: name 'knownUsers' is not defined")

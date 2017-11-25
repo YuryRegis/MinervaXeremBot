@@ -6,13 +6,14 @@ import markup
 import time
 
 
-bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
+token = ''#  <Coloque aqui o token gerado pelo BotFather>
+bot = telebot.TeleBot(token)
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
 global group_id
-group_id = -1001379699085  #  <id do grupo/supergrupo que o bot irá administrar>
+group_id =   #  <id do grupo/supergrupo que o bot irá administrar>
 global adm_id
-adm_id = [473906011] #  <Lista de id's dos administradores do bot/grupo/supergrupo>
+adm_id = [ ] #  <Lista de id's dos administradores do bot/grupo/supergrupo>
 
 
 @bot.message_handler(commands=['ajuda', 'help'], content_types='text')

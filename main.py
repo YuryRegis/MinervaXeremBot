@@ -312,6 +312,15 @@ def new_message(message):
         bot.send_message(message.chat.id, ans)
 
 
+@bot.message_handler(commands=['aviso'], content_types='text')
+def new_message(message):
+    if message.from_user.id not in adm_id:
+        bot.reply_to(message, 'Apenas administradores podem usar este comando.')
+    else:
+        aviso = 'Aviso do administrador:\n\n' + message.text
+        bot.send_message(group_id, aviso)
+
+
 # =========================== Interação em chat privado com @MinervaXeremBot ============================
 
 

@@ -5,20 +5,21 @@ import traceback
 import markup
 import time
 
+
 bot = telebot.TeleBot('501268361:AAHp056OeZVAC3oE2dQtjMKyDucPHfz0Ya0')
 msg_error = 'Oops! Algo de errado não está certo.\nUse /help ou /ajuda para consulta de comandos.'
 removemkp = telebot.types.ReplyKeyboardHide()
 global group_id
-group_id = -1001379699085
+group_id = -1001379699085  #  <id do grupo/supergrupo que o bot irá administrar>
 global adm_id
-adm_id = [473906011]
+adm_id = [473906011] #  <Lista de id's dos administradores do bot/grupo/supergrupo>
 
 
 @bot.message_handler(commands=['ajuda', 'help'], content_types='text')
 def new_message(message):
     arquivo, txt = open('help_command.txt', 'r'), ''
     for linha in arquivo.readlines(): txt += linha
-    bot.send_message(message.from_user.id, txt, parse_mode='HTML', reply_markup=removemkp)
+    bot.send_message(message.chat.id, txt, parse_mode='HTML', reply_markup=removemkp)
 
 
 @bot.message_handler(commands=['ping'], content_types='text')
@@ -87,10 +88,14 @@ def new_message(message):
 def new_markup_message(message):
     cadastro(message.from_user.first_name, message.from_user.id)
     bot.send_chat_action(message.from_user.id, action='TYPING')
-    mkp = markup.main_menu()
-    txt = 'As suas ordens! :)\nO que gostaria de fazer?'
-    bot.send_message(message.from_user.id, txt, reply_markup=mkp)
-    markup.userStep[message.from_user.id] = 1
+    if message.chat.id > 0:
+        mkp = markup.main_menu()
+        txt = 'As suas ordens! :)\nO que gostaria de fazer?'
+        bot.send_message(message.from_user.id, txt, reply_markup=mkp)
+        markup.userStep[message.from_user.id] = 1
+    else:
+        txt = 'Comando válido apenas para chat privado.\nClique em @MinervaXeremBot para iniciar uma conversa.'
+        bot.reply_to(message, txt)
 
 
 @bot.message_handler(commands=['carona'], content_types='text')
@@ -107,8 +112,6 @@ def new_message(message):
             print(motorista, date, hora)
         elif len(texto) == 3:
             date, motorista, hora = texto[0], texto[1], texto[2]
-        else:
-            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         if DataBase.check_value(motorista, date):
             ans = DataBase.insert_carona(motorista, date, hora, name, message.from_user.id)
             if ans == 0:
@@ -127,7 +130,7 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
+        bot.reply_to(message, 'Comando precisa de mais argumentos.\nClique em /ajuda para mais detalhes.')
     except:
         bot.reply_to(message, msg_error)
 
@@ -147,8 +150,6 @@ def new_message(message):
         elif len(texto) == 3:
             motorista, date, hora = texto[0], texto[1], texto[2]
             ans = DataBase.cancel_carona(name, message.from_user.id, motorista, date, hora)
-        else:
-            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         if message.chat.id == group_id:
             bot.send_message(message.chat.id, ans)
         else:
@@ -157,7 +158,7 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
+        bot.reply_to(message, 'Comando precisa de mais argumentos.\nClique em /ajuda para mais detalhes.')
     except:
         bot.reply_to(message, msg_error)
 
@@ -174,8 +175,6 @@ def new_message(message):
             hora = texto[0]
         elif len(texto) == 2:
             date, hora = texto[0], texto[1]
-        else:
-            bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
         ans = DataBase.delet_info(name, date, hora)
         if message.chat.id == group_id:
             bot.send_message(message.chat.id, ans, parse_mode='HTML')
@@ -185,7 +184,7 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
+        bot.reply_to(message, 'Comando precisa de mais argumentos.\nClique em /ajuda para mais detalhes.')
     except:
         bot.reply_to(message, msg_error)
 
@@ -219,7 +218,7 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
+        bot.reply_to(message, 'Comando precisa de mais argumentos.\nClique em /ajuda para mais detalhes.')
     except:
         bot.reply_to(message, msg_error)
 
@@ -246,7 +245,7 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
+        bot.reply_to(message, 'Comando precisa de mais argumentos.\nClique em /ajuda para mais detalhes.')
     except:
         bot.reply_to(message, msg_error)
 
@@ -281,7 +280,7 @@ def new_message(message):
     except NameError:
         print("NameError: name 'knownUsers' is not defined")
     except IndexError:
-        bot.send_message(message.from_user.id, 'Olá! :)\nDigite ou clique em /menu para começar.')
+        bot.reply_to(message, 'Comando precisa de mais argumentos.\nClique em /ajuda para mais detalhes.')
     except:
         bot.reply_to(message, msg_error)
 

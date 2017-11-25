@@ -314,12 +314,17 @@ def new_message(message):
 
 @bot.message_handler(commands=['aviso'], content_types='text')
 def new_message(message):
-    if message.from_user.id not in adm_id:
-        bot.reply_to(message, 'Apenas administradores podem usar este comando.')
-    else:
-        aviso = 'Aviso do administrador:\n\n' + message.text
-        bot.send_message(group_id, aviso)
-
+    try:
+	    if message.from_user.id not in adm_id:
+	        bot.reply_to(message, 'Apenas administradores podem usar este comando.')
+	    else:
+	        aviso = 'Aviso do administrador:\n\n' + message.text.split(maxsplit=1)[1]
+        	bot.send_message(group_id, aviso)
+    except IndexError:
+    	bot.reply_to(message, 'Este comando exige um texto para ser enviado.')
+    except:
+    	bot.send_message(adm_id, 'Erro ao usar comando /aviso.')	
+    	
 
 # =========================== Interação em chat privado com @MinervaXeremBot ============================
 
